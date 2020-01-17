@@ -1,0 +1,53 @@
+class Solution {
+public:
+    void merge(vector<int>& nums,vector<int>& count,vector<int>& index, vector<int>& temp, int begin, int end)
+    {
+        if(begin==end) 
+            return;
+        int mid = begin + (end - begin) / 2;
+        
+        merge(nums, count, index, temp, begin, mid);
+        merge(nums, count, index, temp, mid+1, end);
+        int i = begin, j = mid + 1, p = begin;
+        //copy index to temp
+        for(auto i=begin; i <= end; i++)
+            temp[i]=index[i];
+        //record
+        while(i <= mid && j <= end)
+        {
+            if(nums[ temp[i] ] > nums[ temp[j] ]) 
+            {
+                index[p] = temp[j++];
+            }
+            else
+            {
+                index[p] = temp[i];
+                count[ temp[i] ] = count[ temp[i] ] + (j - mid - 1); 
+                i++;
+            }
+            p++;
+        }
+        while(i <= mid)
+        {
+            index[p++] = temp[i];  
+            count[temp[i]] = count[ temp[i] ] + (j - mid - 1);
+            i++;
+        }
+        while(j <= end)
+        {
+            index[p++] = temp[j++];
+        }
+    }
+    vector<int> countSmaller(vector<int>& nums)
+    {
+        int n=nums.size();
+        vector<int> count(n); 
+        if(n==0) return count;
+        vector<int> index(n);  //真正的顺序 
+        vector<int> temp(n); //临时数组用于归并排序
+        for(auto i = 0; i<n; i++)
+           index[i] = i; 
+        merge(nums, count, index, temp, 0, n-1);
+        return count;
+    }
+};
